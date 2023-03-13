@@ -4,6 +4,47 @@
 #include <stdlib.h>
 #include <string.h>
 
+void estadisticas() {
+    // Top 3 meses con mas eventos
+    // Top 3 eventos con mas recaudacion
+    // Listado de sitios de eventos con cantidad de eventos y monto total recaudado (de mayor amenor) por rango de fechas 
+}
+
+void listaFacturas() {// Falta la busqueda por rango de fecha
+    char* listaFacturas[3] = {"Factura 1", "Factura 2", "Factura 3"};
+    printf("\nLista de facturas \n");
+    for (int i = 0; i < 3; i++)
+    {
+        printf("%i- %s \n", i+1, listaFacturas[i]);
+    }
+    printf("Escoja una opcion o cancele con # >> ");
+    char opcion[1];
+    scanf("%s", opcion);
+    if (strcmp(opcion, "#") == 0) {
+        printf("Cancelado\n");
+    } else {
+        printf("Opcion %s seleccionada\n", opcion);
+    }
+}
+
+void estadoEvento() {
+    char* listaEspacios[3] = {"Espacio 1", "Espacio 2", "Espacio 3"};
+    printf("\nEstado de evento \n");
+    for (int i = 0; i < 3; i++)
+    {
+        printf("%i- %s \n", i+1, listaEspacios[i]);
+    }
+    printf("Escoja una opcion o cancele con # >> ");
+    char opcion[1];
+    scanf("%s", opcion);
+    if (strcmp(opcion, "#") == 0) {
+        printf("Cancelado\n");
+    } else {
+        printf("Opcion %s seleccionada\n", opcion);
+        gestionEspaciosEventosAux();
+    }
+}
+
 // Hay que crear el loop, para recorrer todos los sectores
 void gestionEventosAux() {
     char confirmacion[1];
