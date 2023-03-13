@@ -1,8 +1,11 @@
 #include <stdio.h>
-#include <iostream>
+#include <stdlib.h>
+#include <string.h>
+#include "operativeMenu.h"
 
 int main(int argc, char *argv[])
 {
-    std::cout << "Hello World!" << std::endl;
+    printf("Hello World!\n");
+    menuOperativo();
     return 0;
 }
