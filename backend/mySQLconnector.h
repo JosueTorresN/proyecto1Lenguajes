@@ -6,8 +6,8 @@
 int conectar(MYSQL **conexion);
 void ejecutar_consultas(MYSQL *conexion,char *consulta);
 
-
-int main (int arg, char *argv[]){
+//Primerafuncion la cual se llama en el programa y se utiliza para iniciar la coneccion con la base de datos y para realizar las consultas a la misma. 
+int iniciarConexion (){
     int error;
     MYSQL *conexion;
     char *consulta;
