@@ -41,7 +41,7 @@ void estadoEvento() {
         printf("Cancelado\n");
     } else {
         printf("Opcion %s seleccionada\n", opcion);
-        gestionEspaciosEventosAux();
+        // gestionEspaciosEventosAux();
     }
 }
 
@@ -183,8 +183,6 @@ void gestionEspaciosEventosAux() {
         }
 
     } while (bandera == 0);
-    
-
 }
 
 void gestionEspaciosEventos() {
