@@ -2,24 +2,58 @@
 #include <stdlib.h>
 #include <mysql/mysql.h>
 #include "credenciales.h"
+#include "../models/sitioEventos.h"
 
 
 int conectar(MYSQL **conexion);
 void ejecutar_consultas(MYSQL *conexion,char *consulta);
 
+SitioEventos* getSitioEventosAux(MYSQL *conexion){
+    MYSQL_RES *res_ptr;
+    // MYSQL_FIELD *campo;
+    MYSQL_ROW res_fila;
+
+    res_ptr = mysql_store_result(conexion);
+    if(res_ptr){
+        // printf("Se obtuvo el resultado \n");
+        int columnas = mysql_num_fields(res_ptr);
+        
+        while (columnas )
+        {
+            /* code */
+        }
+        
+        res_fila = mysql_fetch_row(res_ptr);
+    }
+
+}
+
 //Primerafuncion la cual se llama en el programa y se utiliza para iniciar la coneccion con la base de datos y para realizar las consultas a la misma. 
-int iniciarConexion (){
+SitioEventos* getSitioEventos(){
     int error;
     MYSQL *conexion;
     char *consulta;
     error = conectar(&conexion);
-    if(!error){
-        consulta = "SELECT * FROM sitioEventos";
-        ejecutar_consultas(conexion,consulta);
-        mysql_close(conexion);
+
+    if(error){
+        printf("Error al conectarse a la DB \n");
+        exit(1);
     }
-    return 0;
+    error = mysql_query(conexion, "SELECT * FROM sitioEventos");
+    if(error){
+        printf("Error al ejecutar la consulta \n");
+        exit(1);
+    }
+    return getSitioEventosAux(conexion);
+
+    // if(!error){
+    //     consulta = "SELECT * FROM sitioEventos";
+    //     ejecutar_consultas(conexion,consulta);
+    //     mysql_close(conexion);
+    // }
+    // return 0;
 }
+
 int conectar(MYSQL **conexion){
     int error;
     *conexion = mysql_init(NULL);/*mysql_init(NULL);*/
@@ -66,4 +100,30 @@ void ejecutar_consultas(MYSQL *conexion,char *consulta){
     }else{
         printf("Error al ejecutar la consulta");
     }
+}
+
+////Funcion encargada de insertar sitios de enventos
+int insertSitioEventos(char *nombre, char *ubicacion, char *sitioWeb){
+    int error;
+    MYSQL *conexion;
+    char *consulta;
+    error = conectar(&conexion);
+    char par1 = "insert into sitioEventos (nombre, ubicacion, sitioWeb)values(";
+    strcat(par1,nombre);
+    strcat(par1,",");
+    strcat(par1,ubicacion);
+    strcat(par1,",");
+    strcat(par1,sitioWeb);
+    strcat(par1,")");
+
+    if(!error){
+        printf(par1,"\n");
+        consulta = par1;
+        if (mysql_query(conexion, consulta)) {
+        printf("Unable to insert data into Employee table\n");
+        mysql_close(conexion);
+        return 1;
+        }printf("\n");
+    }
+    return 0;
 }
