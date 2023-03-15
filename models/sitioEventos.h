@@ -50,13 +50,13 @@ void imprimirSitioEventos(SitioEventos* sitio) {
 */
 SitioEventos* crearSitioEventos(char* id, char* nombre, char* direccion, char* sitioWeb) {
     SitioEventos* sitio = (SitioEventos*) malloc(sizeof(SitioEventos));
-    char idAux[10];
+    char* idAux = (char*)malloc(sizeof(char) * strlen(id) + 1);
     strcpy(idAux, id);
-    char nombreAux[100];
+    char* nombreAux = (char*)malloc(sizeof(char) * strlen(nombre) + 1);
     strcpy(nombreAux, nombre);
-    char direccionAux[100];
+    char* direccionAux = (char*)malloc(sizeof(char) * strlen(direccion) + 1);
     strcpy(direccionAux, direccion);
-    char sitioWebAux[100];
+    char* sitioWebAux = (char*)malloc(sizeof(char) * strlen(sitioWeb) + 1);
     strcpy(sitioWebAux, sitioWeb);
 
     sitio->id = idAux;
@@ -72,12 +72,23 @@ SitioEventos* crearSitioEventos(char* id, char* nombre, char* direccion, char* s
     * @param sitio: primer sitio de eventos
     * @param nuevo: sitio de eventos a agregar
 */
-void agregarSitioEventos(SitioEventos* sitio, SitioEventos* nuevo) {
-    if (sitio->siguiente == NULL) {
-        sitio->siguiente = nuevo; 
+SitioEventos* agregarSitioEventos(SitioEventos* sitio, SitioEventos* nuevo) {
+    if (sitio == NULL) {
+        sitio = nuevo;
+        return nuevo;
     } else {
-        agregarSitioEventos(sitio->siguiente, nuevo);
+        SitioEventos* sitioAux = sitio;
+        while(sitioAux->siguiente != NULL) {
+            sitioAux = sitioAux->siguiente;
+        }
+        sitioAux->siguiente = nuevo;
+        return sitio;
     }
+    //  else if (sitio->siguiente == NULL) {
+    //     sitio->siguiente = nuevo;
+    // } else {
+    //     agregarSitioEventos(sitio->siguiente, nuevo);
+    // }
 }
 
 #endif // SITIOEVENTOS_H
