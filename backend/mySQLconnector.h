@@ -15,6 +15,7 @@ int iniciarConexion (){
     if(!error){
         consulta = "SELECT * FROM sitioEventos";
         ejecutar_consultas(conexion,consulta);
+        mysql_close(conexion);
     }
     return 0;
 }
