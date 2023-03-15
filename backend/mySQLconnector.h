@@ -3,6 +3,7 @@
 #include <mysql/mysql.h>
 #include "credenciales.h"
 
+
 int conectar(MYSQL **conexion);
 void ejecutar_consultas(MYSQL *conexion,char *consulta);
 
