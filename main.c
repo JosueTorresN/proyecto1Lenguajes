@@ -9,7 +9,7 @@ void menuSelect()
     int bandera = 1;
     do {
         int option;
-        printf("Selecione el tipo de menu que desea utilizar: \n");
+        printf("Selecione el tipo de menu que desea utilizar:  \n");
         printf("1. Menu Operativo \n");
         printf("2. Menu Administrativo \n");
         printf("3. Salir \n");
