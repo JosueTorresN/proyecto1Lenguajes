@@ -45,5 +45,6 @@ int main(int argc, char *argv[])
     // getSitioEventos();
     // menuOperativo();
     menuSelect();
+    // insertarSitioEventos("Tabacones", "Limon", "tabaconec.com");
     return 0;
 }

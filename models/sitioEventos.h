@@ -16,7 +16,9 @@ struct sitioEventos
     * Función que imprime un sitio de eventos
     * @param sitio: sitio de eventos a imprimir
 */
-void imprimirSitioEventosAux(SitioEventos* sitio) {
+void imprimirSitioEventosAux(SitioEventos* sitio, int cont) {
+    printf("{--------------------}\n");
+    printf("Posicion %d\n", cont);
     printf("ID: %s\n", sitio->id);
     printf("Nombre: %s\n", sitio->nombre);
     printf("Dirección: %s\n", sitio->direccion);
@@ -33,9 +35,11 @@ void imprimirSitioEventos(SitioEventos* sitio) {
         return;
     }
     SitioEventos* sitioAux = sitio;
+    int cont = 1;
     while(sitioAux != NULL) {
-        imprimirSitioEventosAux(sitioAux);
+        imprimirSitioEventosAux(sitioAux, cont);
         sitioAux = sitioAux->siguiente;
+        cont++;
     }
     
 }
@@ -84,11 +88,28 @@ SitioEventos* agregarSitioEventos(SitioEventos* sitio, SitioEventos* nuevo) {
         sitioAux->siguiente = nuevo;
         return sitio;
     }
-    //  else if (sitio->siguiente == NULL) {
-    //     sitio->siguiente = nuevo;
-    // } else {
-    //     agregarSitioEventos(sitio->siguiente, nuevo);
-    // }
+}
+
+/*
+    * Función que encuentra un sitio de eventos de la lista de sitios de eventos
+    * @param sitio: primer sitio de eventos
+    * @param id: id del sitio de eventos a encontrar
+    * @return sitio de eventos
+*/
+SitioEventos* findSitioEventos(SitioEventos* sitio, int pos) {
+    if(sitio == NULL) {
+        return NULL;
+    }
+    SitioEventos* sitioAux = sitio;
+    int cont = 1;
+    while(sitioAux != NULL) {
+        if(cont == pos) {
+            return sitioAux;
+        }
+        sitioAux = sitioAux->siguiente;
+        cont++;
+    }
+    return NULL;
 }
 
 #endif // SITIOEVENTOS_H

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "./backend/mySQLconnector.h"
 
 void estadisticas() {
     // Top 3 meses con mas eventos
@@ -186,43 +187,52 @@ void gestionEspaciosEventosAux() {
 }
 
 void gestionEspaciosEventos() {
-    char* listaEspacios[3] = {"Espacio 1", "Espacio 2", "Espacio 3"};
     printf("\nGestion de espacios sitio de evento \n");
-    for (int i = 0; i < 3; i++)
-    {
-        printf("%i- %s \n", i+1, listaEspacios[i]);
-    }
-    printf("Escoja una opcion o cancele con # >> ");
+    SitioEventos* primero = getSitioEventos();
+    imprimirSitioEventos(primero);
+    char* listaEspacios[3] = {"Espacio 1", "Espacio 2", "Espacio 3"};
+
+        printf("{--------------------}\n");
+    printf("Escoja una pocision o cancele con # >> ");
     char opcion[1];
+
     scanf("%s", opcion);
     if (strcmp(opcion, "#") == 0) {
         printf("Cancelado\n");
     } else {
         printf("Opcion %s seleccionada\n", opcion);
-        gestionEspaciosEventosAux();
+        SitioEventos* sitio = findSitioEventos();
+        if (sitio == NULL) {
+            printf("No se encontro el sitio de eventos\n");
+            return;
+        } else {
+            gestionEspaciosEventosAux();
+        }
     }
 }
 
-void newEvent() {
-    char nombreEvento[20];
-    char ubicacionEvento[20];
-    char paginaWebEvento[20];
-    char confirmacin[1];
+void newSitioEvent() {
+    char* nombreEventos = (char*)malloc(20 * sizeof(char));
+    char* ubicacionEvento = (char*)malloc(20 * sizeof(char));
+    char* paginaWebEvento = (char*)malloc(20 * sizeof(char));
+    char* confirmacin = (char*)malloc(1 * sizeof(char));
 
     printf("\nNuevo evento \n");
-    printf("Nombre del evento: ");
-    scanf("%s", nombreEvento);
-    printf("Ubicacion del evento: ");
+    printf("Nombre del sitio de evento: ");
+    scanf("%s", nombreEventos);
+    printf("Ubicacion del sitio evento: ");
     scanf("%s", ubicacionEvento);
-    printf("Pagina web del evento: ");
+    printf("Pagina web del sitio evento: ");
     scanf("%s", paginaWebEvento);
-    printf("Nombre: %s\n", nombreEvento);
+    printf("Nombre: %s\n", nombreEventos);
     printf("Ubicacion: %s\n", ubicacionEvento);
     printf("Pagina web: %s\n", paginaWebEvento);
     // printf("%s %s %s \n", nombreEvento, ubicacionEvento, paginaWebEvento);
     printf("Confirmar? Y/n\n");
     scanf("%s", confirmacin);
     if (strcmp(confirmacin, "Y") == 0) {
+        printf("Nombre la revancha: %s\n", nombreEventos);
+        insertarSitioEventos(nombreEventos, ubicacionEvento, paginaWebEvento);
         printf("Evento creado con exito\n");
     } else {
         printf("Evento no creado\n");
@@ -250,7 +260,7 @@ void menuOperativo() {
         switch (opcion)
         {
         case 1:
-            newEvent();
+            newSitioEvent();
             break;
 
         case 2:

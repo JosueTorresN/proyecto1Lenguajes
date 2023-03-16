@@ -1,3 +1,6 @@
+#ifndef MYSQLCONNECTOR_H
+#define MYSQLCONNECTOR_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <mysql/mysql.h>
@@ -7,6 +10,44 @@
 
 int conectar(MYSQL **conexion);
 void ejecutar_consultas(MYSQL *conexion,char *consulta);
+void imprimir_matriz(char ***matriz, int filas, int columnas);
+char*** generarMatrizDeValoresDeConsulta(MYSQL_RES *valor, int pFilas, int pColumnas);
+// int insertSitioEventos(char *nombre, char *ubicacion, char *sitioWeb);
+
+////Funcion encargada de insertar sitios de enventos
+int insertarSitioEventos(char *nombre, char *ubicacion, char *sitioWeb){
+    int error;
+    MYSQL *conexion;
+    char *consulta;
+    error = conectar(&conexion);
+    if(!error){
+        char par1[200] = "insert into sitioEventos (nombre, ubicacion, sitioWeb)values(";
+        printf("Este es el nombre => %s \n",nombre);
+        strcat(par1,"'");
+        strcat(par1,nombre);
+        strcat(par1,"'");
+        strcat(par1,",");
+        strcat(par1,"'");
+        strcat(par1,ubicacion);
+        strcat(par1,"'");
+        strcat(par1,",");
+        strcat(par1,"'");
+        strcat(par1,sitioWeb);
+        strcat(par1,"'");
+        strcat(par1,")");
+        printf("%s\n",par1);
+        
+        if(!error){
+            consulta = par1;
+            if (mysql_query(conexion, par1)) {
+            printf("Unable to insert data into Employee table\n");
+            mysql_close(conexion);
+            return 1;
+            }printf("\n");
+        }
+        return 0;
+    }
+}
 
 SitioEventos* getSitioEventosAux(MYSQL *conexion){
     MYSQL_RES *res_ptr;
@@ -103,36 +144,83 @@ void ejecutar_consultas(MYSQL *conexion,char *consulta){
     }
 }
 
-////Funcion encargada de insertar sitios de enventos
-int insertSitioEventos(char *nombre, char *ubicacion, char *sitioWeb){
-    int error;
+
+
+
+/////////////////////////////
+
+int getConsulta(char *tabla_Consultar){
+    int error = 0;
     MYSQL *conexion;
-    char *consulta;
     error = conectar(&conexion);
+    printf("%s \n","pasa por aqui");
     if(!error){
-        char par1[200] = "insert into sitioEventos (nombre, ubicacion, sitioWeb)values(";
-        strcat(par1,"'");
-        strcat(par1,nombre);
-        strcat(par1,"'");
-        strcat(par1,",");
-        strcat(par1,"'");
-        strcat(par1,ubicacion);
-        strcat(par1,"'");
-        strcat(par1,",");
-        strcat(par1,"'");
-        strcat(par1,sitioWeb);
-        strcat(par1,"'");
-        strcat(par1,")");
-        printf("%s\n",par1);
         
+        printf("%s \n","pasa por aqui x2");
+        char consulta[100] = "Select * from ";
+        
+        strcat(consulta,tabla_Consultar);
+    
+        int error, filas, columnas;
+        MYSQL_RES *res_ptr;
+        MYSQL_FIELD *campo;
+        //MYSQL_ROW res_fila;
+        error = mysql_query(conexion, consulta);
         if(!error){
-            consulta = par1;
-            if (mysql_query(conexion, par1)) {
-            printf("Unable to insert data into Employee table\n");
-            mysql_close(conexion);
-            return 1;
-            }printf("\n");
+            res_ptr = mysql_store_result(conexion);
+            if(res_ptr){
+                filas = mysql_num_rows(res_ptr);
+                columnas = mysql_num_fields(res_ptr);
+                generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
+                mysql_close(conexion);
+            }
+        }else{
+            printf("Error al mostrar la tabla");
+            exit(1);
         }
-        return 0;
+        
+    }else{
+        printf("Error al ejecutar la consulta");
+        exit(1);
     }
 }
+
+char*** generarMatrizDeValoresDeConsulta(MYSQL_RES *valor, int pFilas, int pColumnas){
+    int filas = pFilas;
+    int columnas = pColumnas;
+    MYSQL_ROW res_fila;
+    
+    char ***matriz = (char***)malloc(filas * sizeof(char**));
+    
+    for (int i = 0; i < filas; i++) {
+        matriz[i] = (char**)malloc(columnas * sizeof(char*));
+        res_fila = mysql_fetch_row(valor);
+        for (int j = 0; j < columnas; j++) {
+            matriz[i][j] = (char*)malloc(256 * sizeof(char)); // Asignar memoria para la cadena de caracteres
+            
+            strcpy(matriz[i][j], res_fila[j]); // Copiar la cadena de caracteres a la memoria asignada
+        }
+    }
+    imprimir_matriz(matriz, filas, columnas);
+    return matriz;
+}
+
+
+
+void imprimir_matriz(char ***matriz, int filas, int columnas) {
+
+    int i, j, k;
+    for (i = 0; i < filas; i++) {
+        printf("Fila %d: ", i);
+        for (j = 0; j < columnas; j++) {
+            printf("[");
+            for (k = 0; matriz[i][j][k] != '\0'; k++) {
+                printf("%c", matriz[i][j][k]);
+            }
+            printf("] ");
+        }
+        printf("\n");
+    }
+}
+
+#endif
