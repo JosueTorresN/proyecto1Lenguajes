@@ -14,6 +14,7 @@ void imprimir_matriz(char ***matriz, int filas, int columnas);
 char*** generarMatrizDeValoresDeConsulta(MYSQL_RES *valor, int pFilas, int pColumnas);
 int agregarAsiento(int pNumeroAsintos, int pEspacioEventoID, int pDisponibilidad);
 int agregarEspacioEvento(char *nombre, char *inicialDelSector, int pCantidadEspacios, char* pSitioEventosID, int pMontoPrecioEspacio);
+void crearAsientos(int pCantidadEspacios);
    
 // int insertSitioEventos(char *nombre, char *ubicacion, char *sitioWeb);
 
@@ -300,11 +301,28 @@ int agregarEspacioEvento(char *nombre, char *inicialDelSector, int pCantidadEspa
             if (mysql_query(conexion, par1)) {
                 printf("Unable to insert data into Employee table\n");
                 mysql_close(conexion);
+
                 // agregarAsiento(1,1,1);
+                
                 return 1;
             }printf("\n");
+            crearAsientos(pCantidadEspacios);
+            printf("Peneeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\n");
         }
         return 0;
+    }
+}
+
+void crearAsientos(int pCantidadEspacios){
+    char*** matriz = getConsulta("espacioEvento");
+    int tamano = sizeof(matriz); // sizeof(matriz[0]);
+    char* espacioEventoID = (char*)malloc(20 * sizeof(char));
+    // char* temp = matriz[tamano][1];
+    printf("Tamano %d\n", tamano);
+    espacioEventoID = matriz[tamano][0];
+    // printf("Essspacio evento IDDDDDDDDDDDDDDDDD%s\n", temp);
+    for (int i = 0; i < pCantidadEspacios; i++) {
+        agregarAsiento(i+1, atoi(espacioEventoID), 0);
     }
 }
 
