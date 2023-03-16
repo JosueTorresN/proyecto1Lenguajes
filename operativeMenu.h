@@ -118,11 +118,12 @@ void editarEspacio() {
     }
 }
 
-void crearEspacio() {
-    char nombreEspacio[20];
-    char siglaEspacio[1];
+void crearEspacio(char* idSitio ) {
+    char* nombreEspacio = (char*) malloc(20 * sizeof(char));
+    char* siglaEspacio = (char*) malloc(1 * sizeof(char));
     int capacidadEspacio;
-    char confirmacion[1];
+    char* confirmacion = (char*) malloc(1 * sizeof(char));
+    int precioEspacio;
     printf("\nNuevo espacio \n");
     printf("Nombre del espacio: ");
     scanf("%s", nombreEspacio);
@@ -130,57 +131,49 @@ void crearEspacio() {
     scanf("%s", siglaEspacio);
     printf("Capacidad del espacio: ");
     scanf("%d", &capacidadEspacio);
+    printf("Precio del espacio: ");
+    scanf("%d", &precioEspacio);
     printf("Nombre: %s\n", nombreEspacio);
     printf("Sigla: %s\n", siglaEspacio);
     printf("Capacidad: %d\n", capacidadEspacio);
     printf("Confirmar? Y/n\n");
     scanf("%s", confirmacion);
     if (strcmp(confirmacion, "Y") == 0) {
+        agregarEspacioEvento(nombreEspacio, siglaEspacio, capacidadEspacio, idSitio, precioEspacio);
         printf("Espacio creado con exito\n");
     } else {
         printf("Espacio no creado\n");
     }
 }
 
-void gestionEspaciosEventosAux() {
+void gestionEspaciosEventosAux(SitioEventos* sitio) {
     int bandera = 0;
     int opcion;
     do
     {
         printf("\n1- Agregar espacio \n");
-        printf("2- Eliminar espacio \n");
-        printf("3- Modificar espacio \n");
-        printf("4- Resetear espacio \n");
-        printf("5- Volver \n");
+        printf("2- Reiniciar espacios \n");
+        printf("3- Volver \n");
         printf(">> ");
         scanf("%d", &opcion);
         switch (opcion)
         {
-        case 1:
-            printf("Agregar espacio \n");
-            crearEspacio();
-            break;
+            case 1:
+                printf("Agregar espacio \n");
+                crearEspacio(sitio -> id);
+                break;
 
-        case 2:
-            printf("Eliminar espacio \n");
-            break;
+            case 2:
+                printf("Reiniciar espacios \n");
+                break;
 
-        case 3:
-            printf("Modificar espacio \n");
-            editarEspacio();
-            break;
+            case 3:
+                bandera = 1;
+                break;
 
-        case 4:
-            printf("Resetear espacio \n");
-            break;
-
-        case 5:
-            bandera = 1;
-            break;
-
-        default:
-            printf("Opcion no valida \n");
-            break;
+            default:
+                printf("Opcion no valida \n");
+                break;
         }
 
     } while (bandera == 0);
@@ -190,9 +183,9 @@ void gestionEspaciosEventos() {
     printf("\nGestion de espacios sitio de evento \n");
     SitioEventos* primero = getSitioEventos();
     imprimirSitioEventos(primero);
-    char* listaEspacios[3] = {"Espacio 1", "Espacio 2", "Espacio 3"};
+    // char* listaEspacios[3] = {"Espacio 1", "Espacio 2", "Espacio 3"};
 
-        printf("{--------------------}\n");
+    printf("{--------------------}\n");
     printf("Escoja una pocision o cancele con # >> ");
     char opcion[1];
 
@@ -201,12 +194,12 @@ void gestionEspaciosEventos() {
         printf("Cancelado\n");
     } else {
         printf("Opcion %s seleccionada\n", opcion);
-        SitioEventos* sitio = findSitioEventos();
+        SitioEventos* sitio = findSitioEventos(primero, atoi(opcion));
         if (sitio == NULL) {
             printf("No se encontro el sitio de eventos\n");
             return;
         } else {
-            gestionEspaciosEventosAux();
+            gestionEspaciosEventosAux(sitio);
         }
     }
 }
@@ -259,16 +252,16 @@ void menuOperativo() {
 
         switch (opcion)
         {
-        case 1:
-            newSitioEvent();
-            break;
+            case 1:
+                newSitioEvent();
+                break;
 
-        case 2:
-            gestionEspaciosEventos();
-            break;
-        
-        default:
-            break;
+            case 2:
+                gestionEspaciosEventos();
+                break;
+            
+            default:
+                break;
         }
     } while (flag == 0);
 }

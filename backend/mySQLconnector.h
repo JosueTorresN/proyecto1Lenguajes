@@ -12,6 +12,9 @@ int conectar(MYSQL **conexion);
 void ejecutar_consultas(MYSQL *conexion,char *consulta);
 void imprimir_matriz(char ***matriz, int filas, int columnas);
 char*** generarMatrizDeValoresDeConsulta(MYSQL_RES *valor, int pFilas, int pColumnas);
+int agregarAsiento(int pNumeroAsintos, int pEspacioEventoID, int pDisponibilidad);
+int agregarEspacioEvento(char *nombre, char *inicialDelSector, int pCantidadEspacios, char* pSitioEventosID, int pMontoPrecioEspacio);
+   
 // int insertSitioEventos(char *nombre, char *ubicacion, char *sitioWeb);
 
 ////Funcion encargada de insertar sitios de enventos
@@ -149,7 +152,7 @@ void ejecutar_consultas(MYSQL *conexion,char *consulta){
 
 /////////////////////////////
 
-int getConsulta(char *tabla_Consultar){
+char*** getConsulta(char *tabla_Consultar){
     int error = 0;
     MYSQL *conexion;
     error = conectar(&conexion);
@@ -171,8 +174,9 @@ int getConsulta(char *tabla_Consultar){
             if(res_ptr){
                 filas = mysql_num_rows(res_ptr);
                 columnas = mysql_num_fields(res_ptr);
-                generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
+                char*** matriz = generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
                 mysql_close(conexion);
+                return matriz;
             }
         }else{
             printf("Error al mostrar la tabla");
@@ -220,6 +224,87 @@ void imprimir_matriz(char ***matriz, int filas, int columnas) {
             printf("] ");
         }
         printf("\n");
+    }
+}
+
+
+////////////////////////// Funcion encargada de agregar asientos
+int agregarAsiento(int pNumeroAsintos, int pEspacioEventoID, int pDisponibilidad){
+    char numeroAsintos[20];
+    sprintf(numeroAsintos, "%d", pNumeroAsintos);
+    char espacioEventoID[20];
+    sprintf(espacioEventoID, "%d", pEspacioEventoID);
+    char disponibilidad[20];
+    sprintf(disponibilidad, "%d", pDisponibilidad);
+    int error;
+    MYSQL *conexion;
+    char *consulta;
+    error = conectar(&conexion);
+    if(!error){
+        char par1[200] = "insert into asiento (numeroAsineto, espacioEventoID, disponibilidad)values(";
+
+        strcat(par1,numeroAsintos);
+        strcat(par1,",");
+        strcat(par1,espacioEventoID);
+        strcat(par1,",");
+        strcat(par1,disponibilidad);
+        
+        strcat(par1,")");
+        printf("%s\n",par1);
+        
+        if(!error){
+            consulta = par1;
+            if (mysql_query(conexion, par1)) {
+            printf("Unable to insert data into Employee table\n");
+            mysql_close(conexion);
+            return 1;
+            }printf("\n");
+        }
+        return 0;
+    }
+}
+
+/////////////////////////FUNCION ENCARGADA DE INSERTAR  UN NUEVEO ESPACIO PARA EVENTO
+int agregarEspacioEvento(char *nombre, char *inicialDelSector, int pCantidadEspacios, char* pSitioEventosID, int pMontoPrecioEspacio){
+    
+    char cantidadEspacios[20];
+    sprintf(cantidadEspacios, "%d", pCantidadEspacios);
+    char sitioEventosID[20];
+    sprintf(sitioEventosID, "%s", pSitioEventosID);
+    char montoPrecioEspacio[20];
+    sprintf(montoPrecioEspacio, "%d", pMontoPrecioEspacio);
+    int error;
+    MYSQL *conexion;
+    char *consulta;
+    error = conectar(&conexion);
+    if(!error){
+        char par1[200] = "insert into espacioEvento (nombre, inicialDelSector, cantidadEspacios, sitioEventosID, montoPrecioEspacio)values(";
+        strcat(par1,"'");
+        strcat(par1,nombre);
+        strcat(par1,"'");
+        strcat(par1,",");
+        strcat(par1,"'");
+        strcat(par1,inicialDelSector);
+        strcat(par1,"'");
+        strcat(par1,",");
+        strcat(par1,cantidadEspacios);
+        strcat(par1,",");
+        strcat(par1,sitioEventosID);
+        strcat(par1,",");
+        strcat(par1,montoPrecioEspacio);
+        strcat(par1,")");
+        printf("%s\n",par1);
+        
+        if(!error){
+            consulta = par1;
+            if (mysql_query(conexion, par1)) {
+                printf("Unable to insert data into Employee table\n");
+                mysql_close(conexion);
+                // agregarAsiento(1,1,1);
+                return 1;
+            }printf("\n");
+        }
+        return 0;
     }
 }
 
