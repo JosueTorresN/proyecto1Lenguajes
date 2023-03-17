@@ -15,6 +15,9 @@ char*** generarMatrizDeValoresDeConsulta(MYSQL_RES *valor, int pFilas, int pColu
 int agregarAsiento(int pNumeroAsintos, int pEspacioEventoID, int pDisponibilidad);
 int agregarEspacioEvento(char *nombre, char *inicialDelSector, int pCantidadEspacios, char* pSitioEventosID, int pMontoPrecioEspacio);
 void crearAsientos(int pCantidadEspacios);
+int retunTablas(char *tabla_Consultar);
+int resertAsientos(int pIDespaciEvento);
+int insertEventos(char *nombre, char *productora, int pSitioEventosID, char *fecha);
    
 // int insertSitioEventos(char *nombre, char *ubicacion, char *sitioWeb);
 
@@ -26,7 +29,7 @@ int insertarSitioEventos(char *nombre, char *ubicacion, char *sitioWeb){
     error = conectar(&conexion);
     if(!error){
         char par1[200] = "insert into sitioEventos (nombre, ubicacion, sitioWeb)values(";
-        printf("Este es el nombre => %s \n",nombre);
+        // printf("Este es el nombre => %s \n",nombre);
         strcat(par1,"'");
         strcat(par1,nombre);
         strcat(par1,"'");
@@ -39,7 +42,7 @@ int insertarSitioEventos(char *nombre, char *ubicacion, char *sitioWeb){
         strcat(par1,sitioWeb);
         strcat(par1,"'");
         strcat(par1,")");
-        printf("%s\n",par1);
+        // printf("%s\n",par1);
         
         if(!error){
             consulta = par1;
@@ -251,7 +254,7 @@ int agregarAsiento(int pNumeroAsintos, int pEspacioEventoID, int pDisponibilidad
         strcat(par1,disponibilidad);
         
         strcat(par1,")");
-        printf("%s\n",par1);
+        // printf("%s\n",par1);
         
         if(!error){
             consulta = par1;
@@ -307,7 +310,7 @@ int agregarEspacioEvento(char *nombre, char *inicialDelSector, int pCantidadEspa
                 return 1;
             }printf("\n");
             crearAsientos(pCantidadEspacios);
-            printf("Peneeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\n");
+            // printf("Bandera =>>\n");
         }
         return 0;
     }
@@ -315,15 +318,159 @@ int agregarEspacioEvento(char *nombre, char *inicialDelSector, int pCantidadEspa
 
 void crearAsientos(int pCantidadEspacios){
     char*** matriz = getConsulta("espacioEvento");
-    int tamano = sizeof(matriz); // sizeof(matriz[0]);
+    int tamano = retunTablas("espacioEvento");
     char* espacioEventoID = (char*)malloc(20 * sizeof(char));
     // char* temp = matriz[tamano][1];
-    printf("Tamano %d\n", tamano);
-    espacioEventoID = matriz[tamano][0];
+    // printf("Tamano %d\n", tamano);
+    espacioEventoID = matriz[tamano -1][0];
     // printf("Essspacio evento IDDDDDDDDDDDDDDDDD%s\n", temp);
     for (int i = 0; i < pCantidadEspacios; i++) {
         agregarAsiento(i+1, atoi(espacioEventoID), 0);
     }
 }
 
+
+////Funcion encargada de regresar la cantidad de filas de una tabla 
+int retunTablas(char *tabla_Consultar){
+    MYSQL_ROW row;
+    MYSQL_RES *result;
+    int num_rows = -1;
+    int error;
+    MYSQL *conexion;
+    char *consulta;
+    error = conectar(&conexion);
+    if(!error){
+        char par1[200] = "select count(*) from ";
+        strcat(par1,tabla_Consultar);
+        // printf("%s\n",par1);
+        if(!error){
+            consulta = par1;
+            
+            if(mysql_query(conexion, par1)) {
+                printf("Unable to insert data into Employee table\n");
+
+            }
+            // Obtener el resultado de la consulta
+            result = mysql_use_result(conexion);
+            if (!result) {
+                printf("Error al obtener el resultado de la consulta: %s\n", mysql_error(conexion));
+                mysql_close(conexion);
+                return -1;
+            }
+            if ((row = mysql_fetch_row(result))) {
+                
+                num_rows = atoi(row[0]);
+            }
+
+            // Liberar memoria y cerrar la conexión
+            mysql_free_result(result);
+            mysql_close(conexion);
+            // printf("%i",num_rows);
+            return num_rows;     
+        }
+        return 0;
+    }
+}
+
+
+////Funcion encargada de resetear los campos de los asientos 
+int resertAsientos(int pIDespaciEvento){
+    char idEspacioEvento[20];
+    sprintf(idEspacioEvento, "%d", pIDespaciEvento);
+    int error;
+    MYSQL *conexion;
+    char *consulta;
+    error = conectar(&conexion);
+    if(!error){
+        char par1[200] = "UPDATE asiento SET disponibilidad = 1 WHERE espacioEventoID = ";
+        strcat(par1,idEspacioEvento);
+        printf("%s\n",par1);
+        
+        if(!error){
+            consulta = par1;
+            if (mysql_query(conexion, par1)) {
+            printf("Unable to insert data into Employee table\n");
+            mysql_close(conexion);
+            return 1;
+            }printf("\n");
+        }
+        return 0;
+    }
+}
+
+
+
+////Funcion encargada de insertar sitios de enventos
+int insertEventos(char *nombre, char *productora, int pSitioEventosID, char *fecha){
+    int error;
+    MYSQL *conexion;
+    char *consulta;
+
+    char sitioEventosID[20];
+    sprintf(sitioEventosID, "%d", pSitioEventosID);
+    error = conectar(&conexion);
+    if(!error){
+        char par1[200] = "insert into evento (nombre, productora, sitioEventosID, fecha)values(";
+        strcat(par1,"'");
+        strcat(par1,nombre);
+        strcat(par1,"'");
+        strcat(par1,",");
+        strcat(par1,"'");
+        strcat(par1,productora);
+        strcat(par1,"'");
+        strcat(par1,",");
+        strcat(par1,sitioEventosID);
+        strcat(par1,",");
+        strcat(par1,"'");
+        strcat(par1,fecha);
+        strcat(par1,"'");
+        strcat(par1,")");
+        printf("%s\n",par1);
+        
+        if(!error){
+            consulta = par1;
+            if (mysql_query(conexion, par1)) {
+            printf("Unable to insert data into Employee table\n");
+            mysql_close(conexion);
+            return 1;
+            }printf("\n");
+        }
+        return 0;
+    }
+}
+
+
+///Funcion creada para regresar la informacion de los estados de los eventos
+int getConsultaEstadoEvento(){
+    int error = 0;
+    MYSQL *conexion;
+    error = conectar(&conexion);
+
+    if(!error){
+
+        char consulta[300] = "select * from evento inner join espacioEvento on evento.sitioEventosID = espacioEvento.sitioEventosID inner join sitioEventos on espacioEvento.sitioEventosID = sitioEventos.sitioEventosID";
+    
+        int error, filas, columnas;
+        MYSQL_RES *res_ptr;
+        MYSQL_FIELD *campo;
+        error = mysql_query(conexion, consulta);
+        printf("%s \n",consulta);
+        if(!error){
+            res_ptr = mysql_store_result(conexion);
+            if(res_ptr){
+                filas = mysql_num_rows(res_ptr);
+                columnas = mysql_num_fields(res_ptr);
+                generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
+                mysql_close(conexion);
+            }
+        }else{
+            printf("Error al mostrar la tabla");
+            exit(1);
+        }
+        
+    }else{
+        printf("Error al ejecutar la consulta");
+        exit(1);
+    }
+}
 #endif

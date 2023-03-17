@@ -47,47 +47,70 @@ void estadoEvento() {
 }
 
 // Hay que crear el loop, para recorrer todos los sectores
-void gestionEventosAux() {
+void gestionEventosAux(char* nombreEvento, char* productoraEvento, char* fechaEvento) {
+    SitioEventos* primero = getSitioEventos();
+    imprimirSitioEventos(primero);
+    
+    printf("{--------------------}\n");
+    printf("Escoja una pocision o cancele con # >> ");
+    char* opcion = (char*) malloc(1 * sizeof(char));
     char confirmacion[1];
-    printf("\nAgrege el valor para cada sector \n");
-    printf("Sector 1: ");
-    int sector1;
-    scanf("%d", &sector1);
-    printf("Sector 2: ");
-    int sector2;
-    scanf("%d", &sector2);
-    printf("Confirmar? Y/n\n");
-    scanf("%s", confirmacion);
-    if (strcmp(confirmacion, "Y") == 0) {
-        printf("Evento creado con exito\n");
+    // printf("\nAgrege el valor para cada sector \n");
+    // printf("Sector 1: ");
+    // int sector1;
+    // scanf("%d", &sector1);
+    // printf("Sector 2: ");
+    // int sector2;
+    // scanf("%d", &sector2);
+    // printf("Confirmar? Y/n\n");
+    // scanf("%s", confirmacion);
+
+    scanf("%s", opcion);
+    if (strcmp(opcion, "#") == 0) {
+        printf("Cancelado\n");
     } else {
-        printf("Evento no creado\n");
+        printf("Opcion %s seleccionada\n", opcion);
+        SitioEventos* sitio = findSitioEventos(primero, atoi(opcion));
+        if (sitio == NULL) {
+            printf("No se encontro el sitio de eventos\n");
+            return;
+        } else {
+            insertEventos(nombreEvento, productoraEvento, atoi(sitio -> id), fechaEvento);
+        }
     }
+    
+    // if (strcmp(confirmacion, "Y") == 0) {
+    //     insertarSitioEventos(nombreEvento, productoraEvento, fechaEvento, lugarEvento);
+    //     printf("Evento creado con exito\n");
+    // } else {
+    //     printf("Evento no creado\n");
+    // }
 }
 
 void gestionEventos() {
-    char nombreEvento[20];
-    char productoraEvento[20];
-    char fechaEvento[20];
-    char lugarEvento[20]; //Este es temporal, hay que cambiarlo por un struct
-    char confirmacion[1];
+    char *nombreEvento = (char*) malloc(20 * sizeof(char));
+    char *productoraEvento = (char*) malloc(20 * sizeof(char));
+    char *fechaEvento = (char*) malloc(20 * sizeof(char));
+    // char *lugarEvento = (char*) malloc(20 * sizeof(char)); //Este es temporal, hay que cambiarlo por un struct
+    char *confirmacion = (char*) malloc(1 * sizeof(char));
 
     printf("\nNuevo evento \n");
     printf("Nombre del evento: ");
     scanf("%s", nombreEvento);
     printf("Productora del evento: ");
     scanf("%s", productoraEvento);
-    printf("Fecha del evento: ");
+    printf("Fecha del evento (YYYY-MM-DD): ");
     scanf("%s", fechaEvento);
-    printf("Lugar del evento: ");
-    scanf("%s", lugarEvento);
+    // printf("Lugar del evento: ");
+    // scanf("%s", lugarEvento);
     printf("Nombre: %s\n", nombreEvento);
     printf("Productora: %s\n", productoraEvento);
     printf("Fecha: %s\n", fechaEvento);
-    printf("Lugar: %s\n", lugarEvento);
+    // printf("Lugar: %s\n", lugarEvento);
     printf("Confirmar? Y/n\n");
     scanf("%s", confirmacion);
     if (strcmp(confirmacion, "Y") == 0) {
+        gestionEventosAux(nombreEvento, productoraEvento, fechaEvento);
         printf("Evento creado con exito\n");
     } else {
         printf("Evento no creado\n");
@@ -165,6 +188,7 @@ void gestionEspaciosEventosAux(SitioEventos* sitio) {
 
             case 2:
                 printf("Reiniciar espacios \n");
+                resertAsientos(atoi(sitio -> id));
                 break;
 
             case 3:
@@ -258,6 +282,10 @@ void menuOperativo() {
 
             case 2:
                 gestionEspaciosEventos();
+                break;
+
+            case 3:
+                gestionEventos();
                 break;
             
             default:
