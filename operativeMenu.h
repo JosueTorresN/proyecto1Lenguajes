@@ -42,7 +42,7 @@ void estadoEvento() {
         printf("Cancelado\n");
     } else {
         printf("Opcion %s seleccionada\n", opcion);
-        // gestionEspaciosEventosAux();
+        getConsultaEstadoEvento();
     }
 }
 
@@ -266,10 +266,9 @@ void menuOperativo() {
         printf("2- Gestion de espacios sitio de evento \n");
         printf("3- Gestion de eventos \n");
         printf("4- Estado de evento \n");
-        printf("5- Gestion de espacios \n");
-        printf("6- Lista de facturas \n");
-        printf("7- Estadisticas \n");
-        printf("8- Volver \n");
+        printf("5- Lista de facturas \n");
+        printf("6- Estadisticas \n");
+        printf("7- Volver \n");
         printf(">> ");
         
         scanf("%d", &opcion);
@@ -288,6 +287,9 @@ void menuOperativo() {
                 gestionEventos();
                 break;
             
+            case 4:
+                estadoEventos();
+                break;
             default:
                 break;
         }
