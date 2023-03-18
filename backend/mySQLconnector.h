@@ -473,4 +473,89 @@ int getConsultaEstadoEvento(){
         exit(1);
     }
 }
+
+
+///Funcion encargada de realizar una consulta de las facturasXeventos que se encuentran en un rango de fechas establecido
+int consultarFactura(char *pFecha1, char *pFecha2){
+    int error = 0;
+    MYSQL *conexion;
+    error = conectar(&conexion);
+    printf("%s \n","pasa por aqui");
+    if(!error){
+        
+        printf("%s \n","pasa por aqui x2");
+        char consulta[300] = "SELECT * FROM factura inner join evento on factura.eventosID =  evento.sitioEventosID WHERE evento.fecha BETWEEN ";
+        strcat(consulta,"'");
+        strcat(consulta,pFecha1);
+        strcat(consulta,"'");
+        strcat(consulta," and ");
+        strcat(consulta,"'");
+        strcat(consulta,pFecha2);
+        strcat(consulta,"'");
+        int error, filas, columnas;
+        MYSQL_RES *res_ptr;
+        MYSQL_FIELD *campo;
+        //MYSQL_ROW res_fila;
+        error = mysql_query(conexion, consulta);
+        if(!error){
+            res_ptr = mysql_store_result(conexion);
+            if(res_ptr){
+                filas = mysql_num_rows(res_ptr);
+                columnas = mysql_num_fields(res_ptr);
+                generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
+                mysql_close(conexion);
+            }
+        }else{
+            printf("Error al mostrar la tabla");
+            exit(1);
+        }
+        
+    }else{
+        printf("Error al ejecutar la consulta");
+        exit(1);
+    }
+}
+
+
+////Funcion encargada de insertar una factura
+int agregarFactura(char *nombre, char *fecha, int pMonto, int pCedula, int pEventosID){
+    char monto[20];
+    sprintf(monto, "%d", pMonto);
+    char cedula[20];
+    sprintf(cedula, "%d", pCedula);
+    char eventosID[20];
+    sprintf(eventosID, "%d", pEventosID);
+    int error;
+    MYSQL *conexion;
+    char *consulta;
+    error = conectar(&conexion);
+    if(!error){
+        char consulta[200] = "insert into factura (nombre, cedula, fecha, monto, eventosID)values(";
+        strcat(consulta,"'");
+        strcat(consulta,nombre);
+        strcat(consulta,"'");
+        strcat(consulta,",");
+        strcat(consulta,cedula);
+        strcat(consulta,",");
+        strcat(consulta,"'");
+        strcat(consulta,fecha);
+        strcat(consulta,"'");
+        strcat(consulta,",");
+        strcat(consulta,monto);
+        strcat(consulta,",");
+        strcat(consulta,eventosID);
+        
+        strcat(consulta,")");
+        printf("%s\n",consulta);
+        
+        if(!error){
+            if (mysql_query(conexion, consulta)) {
+            printf("Unable to insert data into Employee table\n");
+            mysql_close(conexion);
+            return 1;
+            }printf("\n");
+        }
+        return 0;
+    }
+}
 #endif

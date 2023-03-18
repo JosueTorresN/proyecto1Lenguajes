@@ -288,7 +288,7 @@ void menuOperativo() {
                 break;
             
             case 4:
-                estadoEventos();
+                getConsultaEstadoEvento();
                 break;
             default:
                 break;
