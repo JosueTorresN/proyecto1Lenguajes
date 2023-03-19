@@ -7,6 +7,14 @@
 #include "./models/evento.h"
 #include "./backend/mySQLconnector.h"
 
+void comprarBoleto() {
+    printf("Comprar boleto \n");
+    printf("Ingrese el nombre del evento: ");
+    char nombre = (char*) malloc(sizeof(char)*50);
+    scanf("%s", &nombre);
+    char*** evento = consultarXNombreEvento(nombre);
+}
+
 void consultaEvento() {
     char*** listaEventos = getEvento();
     int numfilas = retunTablas("evento");
