@@ -19,6 +19,8 @@ int retunTablas(char *tabla_Consultar);
 int resertAsientos(int pIDespaciEvento);
 int insertEventos(char *nombre, char *productora, int pSitioEventosID, char *fecha);
 char*** getEvento(); 
+char*** getInformacionTotalEvento(int pIdEvento);
+char*** consultarXNombreEvento(char *pNombre);
 // int insertSitioEventos(char *nombre, char *ubicacion, char *sitioWeb);
 
 ////Funcion encargada de insertar sitios de enventos
@@ -108,7 +110,7 @@ int conectar(MYSQL **conexion){
     *conexion = mysql_init(NULL);/*mysql_init(NULL);*/
     if(mysql_real_connect(*conexion,HOST,USERNAME,PASSWORD,DATABASE,PORT,NULL,0)!=NULL)
     {
-        printf("Coneccion exitosa \n");
+        // printf("Coneccion exitosa \n");
         error = 0;
     }
     else{
@@ -219,7 +221,7 @@ void imprimir_matriz(char ***matriz, int filas, int columnas) {
 
     int i, j, k;
     for (i = 0; i < filas; i++) {
-        printf("Fila %d: ", i);
+        printf("Fila %d: ", i+1);
         for (j = 0; j < columnas; j++) {
             printf("[");
             for (k = 0; matriz[i][j][k] != '\0'; k++) {
@@ -620,6 +622,87 @@ char*** getEvento(){
                 char*** eventos = generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
                 mysql_close(conexion);
                 return eventos;
+            }
+        }else{
+            printf("Error al mostrar la tabla");
+            exit(1);
+        }
+        
+    }else{
+        printf("Error al ejecutar la consulta");
+        exit(1);
+    }
+}
+
+
+
+///Funcion encargada de regresar toda la info referente a un evento, el sitio el, asientos y espacios del evento
+char*** getInformacionTotalEvento(int pIdEvento){
+    char idEXA[20];
+    sprintf(idEXA, "%d", pIdEvento);
+    int error = 0;
+    MYSQL *conexion;
+    error = conectar(&conexion);
+    printf("%s \n","pasa por aqui");
+    if(!error){
+        
+        char consulta[400] = "select * from evento inner join espacioEvento on evento.sitioEventosID = espacioEvento.sitioEventosID inner join sitioEventos on espacioEvento.sitioEventosID = sitioEventos.sitioEventosID inner join asiento on espacioEvento.espacioEventoID = asiento.espacioEventoID where evento.eventosID = ";
+        
+        strcat(consulta,idEXA);
+    
+        int error, filas, columnas;
+        MYSQL_RES *res_ptr;
+        MYSQL_FIELD *campo;
+        //MYSQL_ROW res_fila;
+        error = mysql_query(conexion, consulta);
+        if(!error){
+            res_ptr = mysql_store_result(conexion);
+            if(res_ptr){
+                filas = mysql_num_rows(res_ptr);
+                columnas = mysql_num_fields(res_ptr);
+                char*** matriz = generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
+                mysql_close(conexion);
+                return matriz;
+            }
+        }else{
+            printf("Error al mostrar la tabla");
+            exit(1);
+        }
+        
+    }else{
+        printf("Error al ejecutar la consulta");
+        exit(1);
+    }
+}
+
+
+
+///Funcion encargada de realizar una consulta por nombre del evento
+char*** consultarXNombreEvento(char *pNombre){
+    int error = 0;
+    MYSQL *conexion;
+    error = conectar(&conexion);
+    printf("%s \n","pasa por aqui");
+    if(!error){
+        
+        printf("%s \n","pasa por aqui x2");
+        char consulta[300] = "SELECT * FROM evento WHERE evento.nombre = ";
+        strcat(consulta,"'");
+        strcat(consulta,pNombre);
+        strcat(consulta,"'");
+        int error, filas, columnas;
+        MYSQL_RES *res_ptr;
+        MYSQL_FIELD *campo;
+        //MYSQL_ROW res_fila;
+        error = mysql_query(conexion, consulta);
+        if(!error){
+            res_ptr = mysql_store_result(conexion);
+            if(res_ptr){
+                filas = mysql_num_rows(res_ptr);
+                columnas = mysql_num_fields(res_ptr);
+                char*** matriz = generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
+                mysql_close(conexion);
+                return matriz;
             }
         }else{
             printf("Error al mostrar la tabla");

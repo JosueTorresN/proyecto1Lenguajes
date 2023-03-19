@@ -290,6 +290,15 @@ void menuOperativo() {
             case 4:
                 getConsultaEstadoEvento();
                 break;
+            case 5:
+                // getFacturas();
+                break;
+            case 6:
+                // getEstadisticas();
+                break;
+            case 7: 
+                flag = 1;
+                break;
             default:
                 break;
         }

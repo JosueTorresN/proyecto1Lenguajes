@@ -36,17 +36,23 @@ Evento* crearEvento(char* id, char* nombre, char* productora, char* fecha, char*
     return evento;
 }
 
-void agregarEvento(Evento* evento, Evento* nuevo) {
-    if (evento->siguiente == NULL) {
-        evento->siguiente = nuevo; 
+Evento* agregarEvento(Evento* evento, Evento* nuevo) {
+    if (evento == NULL) {
+        evento = nuevo;
+        return evento;
     } else {
-        agregarEvento(evento->siguiente, nuevo);
+        Evento* sitioAux = evento;
+        while(sitioAux->siguiente != NULL) {
+            sitioAux = sitioAux->siguiente;
+        }
+        sitioAux->siguiente = nuevo;
+        return evento;
     }
 }
 
 Evento* crearListaEventos(char*** eventos, int cantidadEventos) {
-    Evento* listaEventos;
-    for (int i = 1; i < cantidadEventos; i++) {
+    Evento* listaEventos = NULL;
+    for (int i = 0; i < cantidadEventos; i++) {
         agregarEvento(listaEventos, crearEvento(eventos[i][0], eventos[i][1], eventos[i][2], eventos[i][3], eventos[i][4]));
     }
     return listaEventos;
@@ -83,6 +89,20 @@ void imprimirEventos(Evento* sitio) {
         sitioAux = sitioAux->siguiente;
         cont++;
     }
+}
+
+Evento* buscarEvento(Evento* evento, int posicion) {
+    printf("Buscando evento en la posición %s\n", evento->nombre);
+    Evento* sitioAux = evento;
+    int cont = 0;
+    while(sitioAux != NULL) {
+        if (cont == posicion) {
+            return sitioAux;
+        }
+        sitioAux = sitioAux->siguiente;
+        cont++;
+    }
+    return NULL;
 }
 
 #endif // EVENTO_H

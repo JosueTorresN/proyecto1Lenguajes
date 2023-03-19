@@ -8,9 +8,21 @@
 #include "./backend/mySQLconnector.h"
 
 void consultaEvento() {
-    char*** listaEventos = getConsultaEstadoEvento();
-    Evento* evento = crearListaEventos(listaEventos, retunTablas("evento"));
-    imprimirEventos(evento);
+    char*** listaEventos = getEvento();
+    int numfilas = retunTablas("evento");
+    Evento* evento = crearListaEventos(listaEventos, numfilas);
+    // imprimirEventos(evento);
+    printf("Ingrese el numero de fila del evento: ");
+    int fila;
+    scanf("%d", &fila);
+    if(fila > numfilas || fila < 0) {
+        printf("No existe el evento \n");
+    } else {
+        // Evento* even = buscarEvento(evento, fila);
+        printf("Informacion del evento: \n");
+        char *info = listaEventos[fila-1][0];
+        getInformacionTotalEvento(atoi(info));
+    }
 }
 
 void generalMenu() {
