@@ -21,6 +21,7 @@ int insertEventos(char *nombre, char *productora, int pSitioEventosID, char *fec
 char*** getEvento(); 
 char*** getInformacionTotalEvento(int pIdEvento);
 char*** consultarXNombreEvento(char *pNombre);
+int reservarAsientos(int pIDespaciEvento);
 // int insertSitioEventos(char *nombre, char *ubicacion, char *sitioWeb);
 
 ////Funcion encargada de insertar sitios de enventos
@@ -487,7 +488,7 @@ char*** consultarFactura(char *pFecha1, char *pFecha2){
     if(!error){
         
         printf("%s \n","pasa por aqui x2");
-        char consulta[300] = "SELECT * FROM factura inner join evento on factura.eventosID =  evento.sitioEventosID WHERE evento.fecha BETWEEN ";
+        char consulta[300] = "SELECT * FROM factura inner join evento on factura.eventosID =  evento.eventosID WHERE evento.fecha BETWEEN ";
         strcat(consulta,"'");
         strcat(consulta,pFecha1);
         strcat(consulta,"'");
@@ -699,6 +700,10 @@ char*** consultarXNombreEvento(char *pNombre){
             res_ptr = mysql_store_result(conexion);
             if(res_ptr){
                 filas = mysql_num_rows(res_ptr);
+                if (filas == 0){
+                    // printf("%s \n","No se encontro ningun evento con ese nombre");
+                    return NULL;
+                }
                 columnas = mysql_num_fields(res_ptr);
                 char*** matriz = generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
                 mysql_close(conexion);
@@ -712,6 +717,31 @@ char*** consultarXNombreEvento(char *pNombre){
     }else{
         printf("Error al ejecutar la consulta");
         exit(1);
+    }
+}
+
+////Funcion encargada de cambiar un asiento a modo de reserva
+int reservarAsientos(int pIDespaciEvento){
+    char idEspacioEvento[20];
+    sprintf(idEspacioEvento, "%d", pIDespaciEvento);
+    int error;
+    MYSQL *conexion;
+    char *consulta;
+    error = conectar(&conexion);
+    if(!error){
+        char par1[200] = "UPDATE asiento SET disponibilidad = 0 WHERE asiento.asientoID = ";
+        strcat(par1,idEspacioEvento);
+        printf("%s\n",par1);
+        
+        if(!error){
+            consulta = par1;
+            if (mysql_query(conexion, par1)) {
+            printf("Unable to insert data into Employee table\n");
+            mysql_close(conexion);
+            return 1;
+            }printf("\n");
+        }
+        return 0;
     }
 }
 #endif
