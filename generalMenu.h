@@ -24,6 +24,7 @@ void imprimirFactura(char*** evento, char*** haciento, int* hacientos, int cont,
         printf("Precio: %s \n", haciento[hacientos[i]-1][10]);
         printf("Tipo: %s \n", haciento[hacientos[i]-1][7]);
         printf("&--------------------------------------------& \n");
+        reservarAsientos(atoi(haciento[hacientos[i]-1][15]));
     }
     agregarFactura(nombre, evento[0][4], precioFinal, atoi(cedula), atoi(evento[0][0]));
 }

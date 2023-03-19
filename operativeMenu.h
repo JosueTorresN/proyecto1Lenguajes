@@ -12,20 +12,28 @@ void estadisticas() {
 }
 
 void listaFacturas() {// Falta la busqueda por rango de fecha
-    char* listaFacturas[3] = {"Factura 1", "Factura 2", "Factura 3"};
     printf("\nLista de facturas \n");
-    for (int i = 0; i < 3; i++)
-    {
-        printf("%i- %s \n", i+1, listaFacturas[i]);
-    }
-    printf("Escoja una opcion o cancele con # >> ");
-    char opcion[1];
-    scanf("%s", opcion);
-    if (strcmp(opcion, "#") == 0) {
-        printf("Cancelado\n");
-    } else {
-        printf("Opcion %s seleccionada\n", opcion);
-    }
+    printf("Ingrese la primera fecha (YYYY-MM-DD): ");
+    char* fecha1 = (char*) malloc(20 * sizeof(char));
+    scanf("%s", fecha1);
+    printf("Ingrese la segunda fecha (YYYY-MM-DD): ");
+    char* fecha2 = (char*) malloc(20 * sizeof(char));
+    scanf("%s", fecha2);
+    char*** facturas = consultarFactura(fecha1, fecha2);
+    // char* listaFacturas[3] = {"Factura 1", "Factura 2", "Factura 3"};
+    // printf("\nLista de facturas \n");
+    // for (int i = 0; i < 3; i++)
+    // {
+    //     printf("%i- %s \n", i+1, listaFacturas[i]);
+    // }
+    // printf("Escoja una opcion o cancele con # >> ");
+    // char opcion[1];
+    // scanf("%s", opcion);
+    // if (strcmp(opcion, "#") == 0) {
+    //     printf("Cancelado\n");
+    // } else {
+    //     printf("Opcion %s seleccionada\n", opcion);
+    // }
 }
 
 void estadoEvento() {
@@ -291,10 +299,10 @@ void menuOperativo() {
                 getConsultaEstadoEvento();
                 break;
             case 5:
-                // getFacturas();
+                listaFacturas();
                 break;
             case 6:
-                // getEstadisticas();
+                topTresRecaudacion();
                 break;
             case 7: 
                 flag = 1;

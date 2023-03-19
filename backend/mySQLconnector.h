@@ -22,6 +22,8 @@ char*** getEvento();
 char*** getInformacionTotalEvento(int pIdEvento);
 char*** consultarXNombreEvento(char *pNombre);
 int reservarAsientos(int pIDespaciEvento);
+char*** topTresEventos();
+char*** topTresRecaudacion();
 // int insertSitioEventos(char *nombre, char *ubicacion, char *sitioWeb);
 
 ////Funcion encargada de insertar sitios de enventos
@@ -729,7 +731,7 @@ int reservarAsientos(int pIDespaciEvento){
     char *consulta;
     error = conectar(&conexion);
     if(!error){
-        char par1[200] = "UPDATE asiento SET disponibilidad = 0 WHERE asiento.asientoID = ";
+        char par1[200] = "UPDATE asiento SET disponibilidad = 1 WHERE asiento.asientoID = ";
         strcat(par1,idEspacioEvento);
         printf("%s\n",par1);
         
@@ -742,6 +744,78 @@ int reservarAsientos(int pIDespaciEvento){
             }printf("\n");
         }
         return 0;
+    }
+}
+
+
+
+///Funcion para regresar las estadisticas de los 3 meses y annos con mas eventos
+char*** topTresEventos(){
+    int error = 0;
+    MYSQL *conexion;
+    error = conectar(&conexion);
+
+    if(!error){
+
+        char consulta[300] = "SELECT fecha, COUNT(*) as cantidad_elementos FROM evento GROUP BY fecha ORDER BY cantidad_elementos DESC LIMIT 3";
+    
+        int error, filas, columnas;
+        MYSQL_RES *res_ptr;
+        MYSQL_FIELD *campo;
+        error = mysql_query(conexion, consulta);
+        printf("%s \n",consulta);
+        if(!error){
+            res_ptr = mysql_store_result(conexion);
+            if(res_ptr){
+                filas = mysql_num_rows(res_ptr);
+                columnas = mysql_num_fields(res_ptr);
+                char*** eventos = generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
+                mysql_close(conexion);
+                return eventos;
+            }
+        }else{
+            printf("Error al mostrar la tabla");
+            exit(1);
+        }
+        
+    }else{
+        printf("Error al ejecutar la consulta");
+        exit(1);
+    }
+}
+
+///Funcion para regresar las estadisticas de los 3 eventos con mas recaudacion
+char*** topTresRecaudacion(){
+    int error = 0;
+    MYSQL *conexion;
+    error = conectar(&conexion);
+
+    if(!error){
+
+        char consulta[500] = "SELECT evento.nombre, SUM(factura.monto) AS total_recaudado FROM evento INNER JOIN factura ON evento.eventosID = factura.eventosID GROUP BY evento.nombre ORDER BY total_recaudado DESC LIMIT 3";
+    
+        int error, filas, columnas;
+        MYSQL_RES *res_ptr;
+        MYSQL_FIELD *campo;
+        error = mysql_query(conexion, consulta);
+        printf("%s \n",consulta);
+        if(!error){
+            res_ptr = mysql_store_result(conexion);
+            if(res_ptr){
+                filas = mysql_num_rows(res_ptr);
+                columnas = mysql_num_fields(res_ptr);
+                char*** eventos = generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
+                mysql_close(conexion);
+                return eventos;
+            }
+        }else{
+            printf("Error al mostrar la tabla");
+            exit(1);
+        }
+        
+    }else{
+        printf("Error al ejecutar la consulta");
+        exit(1);
     }
 }
 #endif
