@@ -1,6 +1,7 @@
 #ifndef EVENTO_H
 #define EVENTO_H
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 struct evento
@@ -10,7 +11,7 @@ struct evento
     char* productora;
     char* fecha;
     char* sitio;
-    Evento *siguiente;
+    struct evento *siguiente;
 } typedef Evento;
 
 Evento* crearEvento(char* id, char* nombre, char* productora, char* fecha, char* sitio) {
@@ -40,6 +41,47 @@ void agregarEvento(Evento* evento, Evento* nuevo) {
         evento->siguiente = nuevo; 
     } else {
         agregarEvento(evento->siguiente, nuevo);
+    }
+}
+
+Evento* crearListaEventos(char*** eventos, int cantidadEventos) {
+    Evento* listaEventos;
+    for (int i = 1; i < cantidadEventos; i++) {
+        agregarEvento(listaEventos, crearEvento(eventos[i][0], eventos[i][1], eventos[i][2], eventos[i][3], eventos[i][4]));
+    }
+    return listaEventos;
+}
+
+/*
+    * Función que imprime un evento
+    * @param sitio: sitio de eventos a imprimir
+*/
+void imprimirEventosAux(Evento* sitio, int cont) {
+    printf("{--------------------}\n");
+    printf("Sitio de eventos %d\n", cont);
+    printf("Id: %s\n", sitio->id);
+    printf("Nombre: %s\n", sitio->nombre);
+    printf("Productora: %s\n", sitio->productora);
+    printf("Fecha: %s\n", sitio->fecha);
+    printf("Sitio: %s\n", sitio->sitio);
+    printf("{--------------------}\n");
+}
+
+/*
+    * Función que imprime todos los eventos
+    * @param sitio: primer evento
+*/
+void imprimirEventos(Evento* sitio) {
+    if(sitio == NULL) {
+        printf("No hay eventos registrados\n");
+        return;
+    }
+    Evento* sitioAux = sitio;
+    int cont = 1;
+    while(sitioAux != NULL) {
+        imprimirEventosAux(sitioAux, cont);
+        sitioAux = sitioAux->siguiente;
+        cont++;
     }
 }
 

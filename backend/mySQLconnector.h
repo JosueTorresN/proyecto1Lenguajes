@@ -18,7 +18,7 @@ void crearAsientos(int pCantidadEspacios);
 int retunTablas(char *tabla_Consultar);
 int resertAsientos(int pIDespaciEvento);
 int insertEventos(char *nombre, char *productora, int pSitioEventosID, char *fecha);
-   
+char*** getEvento(); 
 // int insertSitioEventos(char *nombre, char *ubicacion, char *sitioWeb);
 
 ////Funcion encargada de insertar sitios de enventos
@@ -441,7 +441,7 @@ int insertEventos(char *nombre, char *productora, int pSitioEventosID, char *fec
 
 
 ///Funcion creada para regresar la informacion de los estados de los eventos
-int getConsultaEstadoEvento(){
+char*** getConsultaEstadoEvento(){
     int error = 0;
     MYSQL *conexion;
     error = conectar(&conexion);
@@ -460,8 +460,9 @@ int getConsultaEstadoEvento(){
             if(res_ptr){
                 filas = mysql_num_rows(res_ptr);
                 columnas = mysql_num_fields(res_ptr);
-                generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
+                char*** eventos = generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
                 mysql_close(conexion);
+                return eventos;
             }
         }else{
             printf("Error al mostrar la tabla");
@@ -476,7 +477,7 @@ int getConsultaEstadoEvento(){
 
 
 ///Funcion encargada de realizar una consulta de las facturasXeventos que se encuentran en un rango de fechas establecido
-int consultarFactura(char *pFecha1, char *pFecha2){
+char*** consultarFactura(char *pFecha1, char *pFecha2){
     int error = 0;
     MYSQL *conexion;
     error = conectar(&conexion);
@@ -502,8 +503,9 @@ int consultarFactura(char *pFecha1, char *pFecha2){
             if(res_ptr){
                 filas = mysql_num_rows(res_ptr);
                 columnas = mysql_num_fields(res_ptr);
-                generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
+                char*** matriz = generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
                 mysql_close(conexion);
+                return matriz;
             }
         }else{
             printf("Error al mostrar la tabla");
@@ -556,6 +558,77 @@ int agregarFactura(char *nombre, char *fecha, int pMonto, int pCedula, int pEven
             }printf("\n");
         }
         return 0;
+    }
+}
+
+
+
+////Funcion encargada de regresar los sectores y asientos que se encuentran relacionados entre si
+int getEspacioXAsiento(int pIDespacioEvento){
+    char idEXA[20];
+    sprintf(idEXA, "%d", pIDespacioEvento);
+    int error = 0;
+    MYSQL *conexion;
+    error = conectar(&conexion);
+    if(!error){        
+        char consulta[300] = "Select * from espacioEvento inner join asiento on espacioEvento.espacioEventoID = asiento.espacioEventoID where espacioEvento.espacioEventoID = ";        
+        strcat(consulta,idEXA);    
+        int error, filas, columnas;
+        MYSQL_RES *res_ptr;
+        MYSQL_FIELD *campo;
+        //MYSQL_ROW res_fila;
+        error = mysql_query(conexion, consulta);
+        if(!error){
+            res_ptr = mysql_store_result(conexion);
+            if(res_ptr){
+                filas = mysql_num_rows(res_ptr);
+                columnas = mysql_num_fields(res_ptr);
+                generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
+                mysql_close(conexion);
+            }
+        }else{
+            printf("Error al mostrar la tabla");
+            exit(1);
+        }     
+    }else{
+        printf("Error al ejecutar la consulta");
+        exit(1);
+    }
+}
+
+
+///Funcion creada para regresar la informacion de la tabal eventos
+char*** getEvento(){
+    int error = 0;
+    MYSQL *conexion;
+    error = conectar(&conexion);
+
+    if(!error){
+
+        char consulta[300] = "select * from evento";
+    
+        int error, filas, columnas;
+        MYSQL_RES *res_ptr;
+        MYSQL_FIELD *campo;
+        error = mysql_query(conexion, consulta);
+        printf("%s \n",consulta);
+        if(!error){
+            res_ptr = mysql_store_result(conexion);
+            if(res_ptr){
+                filas = mysql_num_rows(res_ptr);
+                columnas = mysql_num_fields(res_ptr);
+                char*** eventos = generarMatrizDeValoresDeConsulta(res_ptr,filas,columnas);
+                mysql_close(conexion);
+                return eventos;
+            }
+        }else{
+            printf("Error al mostrar la tabla");
+            exit(1);
+        }
+        
+    }else{
+        printf("Error al ejecutar la consulta");
+        exit(1);
     }
 }
 #endif

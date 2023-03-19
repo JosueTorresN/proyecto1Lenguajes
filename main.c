@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "operativeMenu.h"
+#include "generalMenu.h"
 #include "./backend/mySQLconnector.h"
 
 void menuSelect()
@@ -11,7 +12,7 @@ void menuSelect()
         int option;
         printf("Selecione el tipo de menu que desea utilizar:  \n");
         printf("1. Menu Operativo \n");
-        printf("2. Menu Administrativo \n");
+        printf("2. Menu General \n");
         printf("3. Salir \n");
         scanf("%d", &option);
         switch (option)
@@ -20,7 +21,7 @@ void menuSelect()
             menuOperativo();
             break;
         case 2:
-            // menuAdministrativo();
+            generalMenu();
             break;
         case 3:
             printf("Saliendo del programa... \n");
