@@ -302,7 +302,10 @@ void menuOperativo() {
                 listaFacturas();
                 break;
             case 6:
+                printf("Top recaudacion \n");
                 topTresRecaudacion();
+                printf("Top asistencia \n");
+                topTresEventos();
                 break;
             case 7: 
                 flag = 1;
